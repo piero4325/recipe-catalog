@@ -71,6 +71,13 @@ def delete_category(category_id: int, db: Session = Depends(get_db)):
     db_category = db.query(models.Category).filter(models.Category.id == category_id).first()
     if not db_category:
         raise HTTPException(status_code=404, detail="Category not found")
+    if db.query(models.Recipe).filter(
+        models.Recipe.category_id == category_id
+    ).first():
+        raise HTTPException(
+        status_code=409,
+        detail="Cannot delete category because it contains recipes"
+    )
 
     db.delete(db_category)
     db.commit()

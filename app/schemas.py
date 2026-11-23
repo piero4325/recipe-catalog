@@ -8,6 +8,10 @@ class CategoryCreate(BaseModel):
     name: str = Field(min_length=1, max_length=100)
     description: Optional[str] = Field(default=None, max_length=500)
 
+class RecipeIngredientCreate(BaseModel):
+    ingredient_id: int
+    amount: float = Field(gt=0) 
+
 
 class CategoryRead(BaseModel):
     id: int
@@ -58,7 +62,7 @@ class RecipeCreate(BaseModel):
     cooking_time: Optional[int] = Field(default=None, gt=0)
     servings: Optional[int] = Field(default=None, gt=0)
     category_id: int
-    ingredients: List[dict] = Field(default=[])  
+    ingredients: List[RecipeIngredientCreate] = Field(default_factory=list)
    
 
 

@@ -23,7 +23,7 @@ def create_recipe(recipe: schemas.RecipeCreate, db: Session = Depends(get_db)):
 
     for item in recipe.ingredients:
         ingredient = db.query(models.Ingredient).filter(
-            models.Ingredient.id == item["ingredient_id"]
+            models.Ingredient.id == item.ingredient_id
         ).first()
         if ingredient is None:
             raise HTTPException(
@@ -32,8 +32,8 @@ def create_recipe(recipe: schemas.RecipeCreate, db: Session = Depends(get_db)):
             )
         db_recipe.recipe_ingredients.append(
             models.RecipeIngredient(
-                ingredient_id=item["ingredient_id"],
-                amount=item["amount"],
+                ingredient_id=item.ingredient_id,
+                amount=item.amount,
             )
         )
 
@@ -75,6 +75,16 @@ def update_recipe(
         raise HTTPException(status_code=404, detail="Recipe not found")
 
     update_data = recipe_update.model_dump(exclude_unset=True)
+    if "category_id" in update_data:
+        category = db.query(models.Category).filter(
+        models.Category.id == update_data["category_id"]
+        ).first()
+
+    if category is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Category not found"
+        )
     for field, value in update_data.items():
         setattr(db_recipe, field, value)
 
