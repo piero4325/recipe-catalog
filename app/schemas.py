@@ -1,16 +1,11 @@
+from typing import List, Optional
+
 from pydantic import BaseModel, Field
-from typing import Optional, List
-
-
 
 
 class CategoryCreate(BaseModel):
     name: str = Field(min_length=1, max_length=100)
     description: Optional[str] = Field(default=None, max_length=500)
-
-class RecipeIngredientCreate(BaseModel):
-    ingredient_id: int
-    amount: float = Field(gt=0) 
 
 
 class CategoryRead(BaseModel):
@@ -24,8 +19,6 @@ class CategoryRead(BaseModel):
 class CategoryUpdate(BaseModel):
     name: Optional[str] = Field(default=None, min_length=1, max_length=100)
     description: Optional[str] = Field(default=None, max_length=500)
-
-
 
 
 class IngredientCreate(BaseModel):
@@ -46,25 +39,27 @@ class IngredientUpdate(BaseModel):
     unit: Optional[str] = Field(default=None, min_length=1, max_length=50)
 
 
+class RecipeIngredientCreate(BaseModel):
+    ingredient_id: int
+    amount: float = Field(gt=0)
 
 
 class RecipeIngredientRead(BaseModel):
     ingredient_id: int
     amount: float
-    ingredient: IngredientRead  
+    ingredient: IngredientRead
 
     model_config = {"from_attributes": True}
 
 
 class RecipeCreate(BaseModel):
     title: str = Field(min_length=1, max_length=200)
-    description: Optional[str] = Field(default=None)
+    description: Optional[str] = None
     cooking_time: Optional[int] = Field(default=None, gt=0)
     servings: Optional[int] = Field(default=None, gt=0)
+    difficulty: Optional[str] = Field(default=None, max_length=20)
     category_id: int
     ingredients: List[RecipeIngredientCreate] = Field(default_factory=list)
-   
-
 
 
 class RecipeRead(BaseModel):
@@ -73,16 +68,18 @@ class RecipeRead(BaseModel):
     description: Optional[str]
     cooking_time: Optional[int]
     servings: Optional[int]
+    difficulty: Optional[str]
     category_id: int
     category: CategoryRead
-    recipe_ingredients: List[RecipeIngredientRead] = [] 
+    recipe_ingredients: List[RecipeIngredientRead] = Field(default_factory=list)
 
     model_config = {"from_attributes": True}
 
 
 class RecipeUpdate(BaseModel):
     title: Optional[str] = Field(default=None, min_length=1, max_length=200)
-    description: Optional[str] = Field(default=None)
+    description: Optional[str] = None
     cooking_time: Optional[int] = Field(default=None, gt=0)
     servings: Optional[int] = Field(default=None, gt=0)
+    difficulty: Optional[str] = Field(default=None, max_length=20)
     category_id: Optional[int] = None
